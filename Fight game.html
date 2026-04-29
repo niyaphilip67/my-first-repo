@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>&#129354;&#128293;PUNCH BUNCH &#128293;&#129354;</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:'Press Start 2P';
+  background:url('images/background 2.png') no-repeat center/cover;
+}
+
+/* GAME */
+#game{
+  position:relative;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* PLAYER */
+#player{
+  position:absolute;
+  bottom:20%;
+  left:20%;
+}
+#player img{
+  width:clamp(140px, 20vw, 220px);
+}
+
+/* OBJECT */
+#object{
+  position:absolute;
+  bottom:30%;
+  left:100%;
+}
+#object img{
+  width:clamp(85px, 12vw, 110px);
+}
+
+/* JUMP */
+.animate{
+  animation:jump 0.5s;
+}
+@keyframes jump{
+  0%{ bottom:20%; }
+  50%{ bottom:35%; }
+  100%{ bottom:20%; }
+}
+
+/* SCORE */
+.score-container{
+  position:absolute;
+  top:35px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:40px;
+  z-index:1000;
+}
+.score-box{
+  background: white ;
+  color:black;
+  padding:10px 20px;
+  border-radius:15px;
+  border: 2px solid black;
+  text-align:center;
+}
+.score-box span{
+  font-size:23px;
+}
+
+.highlight-score{
+  background: #ffffff;          
+  color: #000000;               
+  box-shadow: 0 0 20px #fff;    
+  transform: scale(1.2);       
+  transition: 0.3s;
+}
+
+/* RESULT SCREEN */
+.result-screen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.8);
+  z-index:500;
+}
+
+.result-box{
+  position:relative;
+  width:100%;
+  max-width:400px;
+}
+
+.result-box img{
+  width:100%;
+}
+/* BUTTON */
+.result-buttons{
+  position: absolute;
+  bottom: 15%;             
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 30px;  
+}
+
+.btn{
+  padding:clamp(12px, 2.5vw, 18px) clamp(25px, 5vw, 35px);
+  border-radius: 30px;
+  font-family: 'Press Start 2P';
+  font-size: 15px;
+  font-weight:bold;
+  letter-spacing: 0.5px;
+  border:none;
+  cursor:pointer;
+  transition:0.3s;
+  border: 2px solid black;
+  left: 0;
+}
+
+
+.restart{
+  background:rgb(122, 204, 0);
+  color:black;
+}
+
+.home{
+  background:red;
+  color:black;
+}
+
+/* HOVER */
+.btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 15px rgba(0,0,0,0.3);
+  border-color: black;
+}
+
+.btn:active{
+  transform:scale(0.9);
+}
+
+/* MOBILE BUTTONS */
+.mobile-controls{
+  position:fixed;
+  bottom: 30px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap: 60%;
+  padding:0 40px;
+}
+.control-btn{
+  width:80px;
+}
+
+.gamesound-btn{
+ position: absolute;
+  top: 20px;
+ right: 20px;
+ padding: 10px 15px;
+ font-family: 'Press Start 2P';
+ background: White;
+ color: Black;
+ border: 2px solid white;
+ border-radius: 10px;
+ cursor: pointer;
+ z-index: 9999;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <!-- SCORE -->
+  <div class="score-container">
+    <div class="score-box">
+      Score<br><span id="score">0</span>
+    </div>
+    <div class="score-box">
+      High Score<br><span id="highScore">0</span>
+    </div>
+  </div>
+
+  <!-- PLAYER -->
+  <div id="player">
+    <img id="playerImg" src="images/pstance.png">
+  </div>
+
+  <!-- OBJECT -->
+  <div id="object">
+    <img id="objectImg" src="images/spike.png">
+  </div>
+
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="resultScreen" class="result-screen">
+  <div class="result-box">
+    <img src="images/resultbox.png">
+
+    <div class="result-buttons">
+     <button class="btn restart" onclick="restartGame()"><strong>RESTART</strong></button> 
+      <button class="btn home" onclick="goHome()"><strong>HOME</strong></button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE CONTROLS -->
+<div class="mobile-controls">
+  <img src="images/jumpbtn.png" class="control-btn" onclick="jump()">
+  <img src="images/punchbtn.png" class="control-btn" onclick="punch()">
+</div>
+
+<!-- SOUNDS -->
+<audio id="jumpSound" src="sounds/jump.mp3"></audio>
+<audio id="punchSound" src="sounds/punch.mp3"></audio>
+<audio id="bellSound" src="sounds/bell.mp3"></audio>
+<audio id="cheerSound" src="sounds/cheer.mp3"></audio>
+<audio id="bgMusic" src="sounds/bg.mp3" loop></audio>
+<button class="gamesound-btn" id="gameSoundBtn">🔊</button>
+
+
+<script>
+ /*SOUND*/
+const gameSoundBtn = document.getElementById("gameSoundBtn");
+
+/* default ON */
+if (localStorage.getItem("gameSound") === null) {
+  localStorage.setItem("gameSound", "true");
+}
+
+function getSoundSetting() {
+  return localStorage.getItem("gameSound") === "true";
+}
+
+/* UI */
+function updateGameSoundUI(){
+  const btn = document.getElementById("gameSoundBtn");
+  if (!btn) return;
+
+  btn.innerText =
+    localStorage.getItem("gameSound") === "true"
+      ? "🔊"
+      : "🔇";
+}
+
+updateGameSoundUI();
+
+/* toggle button */
+gameSoundBtn?.addEventListener("click", () => {
+  let current = getSoundSetting();
+  localStorage.setItem("gameSound", (!current).toString());
+  updateGameSoundUI();
+});
+
+updateGameSoundUI();
+
+/* PLAY SOUND (THIS CONTROLS EVERYTHING) */
+function playSound(sound) {
+  if (!getSoundSetting() || !sound) return;
+
+  sound.currentTime = 0;
+  sound.play().catch(() => {});
+}
+
+/* MUSIC CONTROL */
+function controlMusic() {
+  const music = document.getElementById("bgMusic");
+  if (!music) return;
+
+  if (getSoundSetting()) {
+    music.volume = 0.1;
+    music.play().catch(() => {});
+  } else {
+    music.pause();
+    music.currentTime = 0;
+  }
+}
+
+setInterval(controlMusic, 500);
+/* GAME VARIABLES */
+
+let isPunching = false;
+let isJumping = false;
+
+let player = document.getElementById("player");
+let playerImg = document.getElementById("playerImg");
+let object = document.getElementById("object");
+let objectImg = document.getElementById("objectImg");
+
+let score = 0;
+let speed = 4; 
+let gameRunning = true;
+
+let spawnInterval = 1200; 
+let spawnTimer;
+
+/* HIGH SCORE */
+let highScore = localStorage.getItem("highScore") || 0;
+document.getElementById("highScore").innerText = highScore;
+
+window.addEventListener("load", () => {
+  const music = document.getElementById("bgMusic");
+
+  if (localStorage.getItem("gameSound") === "true") {
+    music.volume = 0.1;
+    music.play().catch(() => {});
+  }
+});
+
+/*CONTROLS */
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "f") jump();
+  if(e.key === "a") punch();
+});
+
+/* JUMP  */
+function jump(){
+  if(player.classList.contains("animate")) return;
+
+  player.classList.add("animate");
+  playerImg.src = "images/pblock.png";
+  
+playSound(document.getElementById("jumpSound"));
+
+  setTimeout(()=>{
+    player.classList.remove("animate");
+    playerImg.src = "images/pstance.png";
+  },500);
+}
+
+/* PUNCH  */
+function punch(){
+  if(isPunching) return;
+
+  isPunching = true;
+  playerImg.src = "images/ppunch.png";
+  
+  playSound(document.getElementById("punchSound"));
+
+  setTimeout(()=>{
+    playerImg.src = "images/pstance.png";
+    isPunching = false;
+  },300);
+}
+
+/*  OBJECT */
+function createObject(){
+
+  if(!gameRunning) return;
+
+  const obj = document.createElement("img");
+
+  let type = Math.random() > 0.5 ? "spike" : "glove";
+
+  if(type === "spike"){
+    obj.src = "images/spike.png";
+  } else {
+    obj.src = "images/glove.png";
+  }
+
+  obj.classList.add("object");
+  obj.style.position = "absolute";
+  obj.style.bottom = "30%";
+  obj.style.left = window.innerWidth + "px";
+  obj.style.width = "clamp(85px, 12vw, 110px)";
+
+  document.getElementById("game").appendChild(obj);
+
+  let pos = window.innerWidth;
+
+  let move = setInterval(()=>{
+
+    if(!gameRunning){
+      clearInterval(move);
+      return;
+    }
+
+    pos -= speed;
+    obj.style.left = pos + "px";
+
+    let p = player.getBoundingClientRect();
+    let o = obj.getBoundingClientRect();
+
+    const isColliding = (
+      o.left < p.right &&
+      o.right > p.left &&
+      o.bottom > p.top &&
+      o.top < p.bottom
+    );
+
+    if(isColliding){
+      if(type === "spike"){
+        if(player.classList.contains("animate")){
+          updateScore(); 
+        } else {
+          gameOver();
+        }
+      }
+
+      if(type === "glove"){
+        if(isPunching){
+          updateScore(); 
+        } else {
+          gameOver();
+        }
+      }
+
+      obj.remove();
+      clearInterval(move);
+      return; 
+    }
+
+    if(pos < -150){
+      obj.remove();
+      clearInterval(move);
+    }
+
+  },20);
+
+  if (gameRunning) {
+    spawnTimer = setTimeout(createObject, spawnInterval);
+  }
+}
+
+/* SCORE & PROGRESSION */
+function updateScore(){
+  score++;
+  document.getElementById("score").innerText = score;
+
+  if(score > highScore){
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
+    document.getElementById("highScore").innerText = highScore;
+  }
+
+  /* --- SPEEDS --- */
+   if(score % 5 === 0){
+
+    if(score === 5){
+        speed = 4.5;
+        spawnInterval = 1150;
+    } 
+    else if(score === 10){
+        speed = 5.0;
+        spawnInterval = 1100;
+    }
+    else if(score === 15){
+        speed = 5.5;
+        spawnInterval = 1050;
+    }
+    else if(score === 20){
+        speed = 6.0;
+        spawnInterval = 950;
+    }
+    else if(score === 25){
+        speed = 6.5;
+        spawnInterval = 900;
+    }
+    else if(score === 30){
+        speed = 7.5;
+        spawnInterval = 850;
+    }
+}
+}
+
+
+/* GAME OVER  */
+
+function gameOver(){
+  if(!gameRunning) return;
+
+  gameRunning = false;
+  clearTimeout(spawnTimer);
+
+  playSound(document.getElementById("bellSound"));
+
+  setTimeout(()=>{
+    playSound(document.getElementById("cheerSound"));
+  },300);
+
+  document.getElementById("resultScreen").style.display = "flex";
+
+  document.querySelectorAll(".score-box").forEach(box=>{
+    box.classList.add("highlight-score");
+  });
+}
+
+/* NEXT BUTTONS  */
+
+function restartGame(){
+  location.reload();
+}
+
+function goHome(){
+  window.location.href = "MAIN PAGE.html";
+}
+
+/* START GAME  */
+
+createObject();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>&#129354;&#128293;PUNCH BUNCH &#128293;&#129354;</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!--Link your CSS file-->
+  <link rel="stylesheet" href="style.css">
+
+ <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    html,body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family:Arial, sans-serif ;
+      background-image:url('images/background1.png');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .introscreen{
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .intro-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .intro-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .menu-buttons{
+      position:absolute;
+      top: 80%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      display:flex;
+      gap: clamp(20px, 8vw, 50px);
+      width: 100%;
+      justify-content: center;
+    }
+    .btn{
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: clamp(12px, 2.8vw, 16px) clamp(22px, 4.5vw, 32px);
+     border-radius:30px;
+     border-color: black;
+     text-decoration:none;
+     color:black;
+     font-family: 'Press Start 2P';
+     font-size: 19px;
+     font-weight:bold;
+     letter-spacing: 0.5px;
+     overflow:hidden;
+     cursor:pointer;
+     transition:0.3s;
+     position: relative;
+     white-space: nowrap;          
+}
+
+    .fight{
+      background: rgb(122, 204, 0) ;
+    }
+
+    .instructions{
+      background:#0162c8;
+    }
+
+    .btn:hover:first-child{
+      transform:scale(1.1);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      background-color:  rgb(122, 204, 0);
+      border-color: black;
+    }
+    .btn:hover:last-child{
+      transform:scale(1.1);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      background-color: #0162c8;
+      border-color: black;
+    }
+
+    .btn:active{
+      transform: scale(0.9);
+    }
+
+    .instructions-container{
+      position: absolute;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .instructions-img{
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .close-btn{
+      padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
+      border: none;
+      background: red;
+      font-family:'Press Start 2P' ;
+      color: black;
+      border-radius: 20px;
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      cursor: pointer;
+      position: absolute;
+      bottom: 4%;
+      font-size: 20px;
+    }
+
+    .credits-btn{
+      position: absolute;
+      top: 20px;
+     right: 20px;
+     padding: 10px 15px;
+     font-family: 'Press Start 2P';
+     background: White;
+     color: Black;
+     border: 2px solid white;
+     border-radius: 10px;
+     cursor: pointer;
+     z-index: 9999;
+    }
+
+    .credits-popup{
+      position: absolute;
+     display: none;
+     top: 0;
+     left: 50;
+     width: 100%;
+     height: 100%;
+     background: rgba(0,0,0,0.8);
+     justify-content: center;
+     align-items: center;
+      z-index: 9999;
+}
+      .credits-content{
+       position: absolute;
+       width:100%;
+       max-width: 500px;
+      }
+
+     .credits-img{
+      width: 100%;
+      max-width: 600px;
+      border-radius: 12px;
+      left: 50%;
+    }
+
+
+    .close-credits{
+      padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
+      border: none;
+      background: red;
+      color: black;
+      font-family: 'Press Start 2P';
+      border-radius: 20px;
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      cursor: pointer;
+      position: absolute;
+      bottom: 5%;
+      font-size: 20px;
+      left: 36%;
+    }
+    
+ </style>
+</head>
+<body>
+  <div class="introscreen">
+    <div class="intro-container">
+      <img src="images/intro box.png" alt="Introbox">
+      <div class="menu-buttons">
+        <a class="btn fight" href="Fight game.html"><strong>FIGHT!</strong></a>
+        
+        <a class="btn instructions"><Strong>INSTRUCTIONS</Strong></a>
+      </div>
+    </div>
+
+    <div class="instructions-container" id="instructionsBox">
+      <img src="images/instruction.png" class="instructions-img">
+      <button class="close-btn"><strong>CLOSE</strong></button>
+    </div>
+  </div>
+
+  <button class="credits-btn" id="creditsBtn">Source</button>
+
+<div id="creditsPopup" class="credits-popup">
+  <div class="credits-content">
+    <img src="images/credits.png" class="credits-img">
+    <button class="close-credits" id="closeCreditsBtn">CLOSE</button>
+
+  </div>
+</div>
+<script>
+const instructionsBtn = document.querySelector(".instructions");
+const instructionsBox = document.getElementById("instructionsBox");
+const closeBtn = document.querySelector(".close-btn");
+
+instructionsBtn.addEventListener("click", () => {
+  instructionsBox.style.display = "flex";
+});
+
+closeBtn.addEventListener("click", () => {
+  instructionsBox.style.display = "none";
+});
+
+/*SOURCE*/
+const creditsPopup = document.getElementById("creditsPopup");
+const creditsBtn = document.getElementById("creditsBtn");
+const closeCreditsBtn = document.getElementById("closeCreditsBtn");
+
+/* OPEN POPUP */
+creditsBtn.addEventListener("click", () => {
+  creditsPopup.style.display = "flex";
+});
+
+/* CLOSE BUTTON */
+closeCreditsBtn.addEventListener("click", () => {
+  creditsPopup.style.display = "none";
+});
+
+/* CLICK OUTSIDE TO CLOSE */
+creditsPopup.addEventListener("click", (e) => {
+  if (e.target === creditsPopup) {
+    creditsPopup.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>
